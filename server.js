@@ -8,9 +8,9 @@ const app = express();
 const PORT = 3000;
 
 // GitHub API настройки
-const GITHUB_TOKEN = 'your-github-token';  // Здесь укажите ваш токен
-const REPO_OWNER = 'your-github-username'; // Ваше имя пользователя на GitHub
-const REPO_NAME = 'your-repository-name';  // Название репозитория
+const GITHUB_TOKEN = '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';  // Здесь укажите ваш токен
+const REPO_OWNER = 'VladRastsvet'; // Ваше имя пользователя на GitHub
+const REPO_NAME = 'Katushka';  // Название репозитория
 
 // Middleware для сервировки статичных файлов
 app.use(express.static('public'));
