@@ -51,30 +51,7 @@
         </div>
 
         <!-- Photo Albums -->
-        <div id="albums" class="row">
-            <!-- Example Album -->
-            <div class="col-md-4">
-                <div class="album">
-                    <img src="https://via.placeholder.com/300x200" alt="Фото">
-                    <div class="album-title">Отпуск 2025</div>
-                    <p>15 фотографий</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="album">
-                    <img src="https://via.placeholder.com/300x200" alt="Фото">
-                    <div class="album-title">Семейный альбом</div>
-                    <p>20 фотографий</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="album">
-                    <img src="https://via.placeholder.com/300x200" alt="Фото">
-                    <div class="album-title">Друзья</div>
-                    <p>10 фотографий</p>
-                </div>
-            </div>
-        </div>
+        <div id="albums" class="row"></div>
     </main>
 
     <!-- Add Photo Modal -->
@@ -86,14 +63,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addPhotoForm">
+                    <form id="addPhotoForm" enctype="multipart/form-data">
                         <div class="mb-3">
                             <label for="photoTitle" class="form-label">Название альбома</label>
                             <input type="text" class="form-control" id="photoTitle" required>
                         </div>
                         <div class="mb-3">
                             <label for="photoFile" class="form-label">Выберите фотографию</label>
-                            <input type="file" class="form-control" id="photoFile" required>
+                            <input type="file" class="form-control" id="photoFile" name="photoFile" required>
                         </div>
                         <button type="submit" class="btn btn-primary">Добавить</button>
                     </form>
@@ -124,51 +101,6 @@
             modal.show();
         }
 
-        // Handle Add Photo Form Submission
-        document.getElementById('addPhotoForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const title = document.getElementById('photoTitle').value;
-            const fileInput = document.getElementById('photoFile');
-            const file = fileInput.files[0];
-
-            if (title && file) {
-                const formData = new FormData();
-                formData.append('photoTitle', title);
-                formData.append('photoFile', file);
-
-                // Send the photo to the server for uploading to GitHub
-                fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const albumsContainer = document.getElementById('albums');
-                        const newAlbum = document.createElement('div');
-                        newAlbum.className = 'col-md-4';
-                        newAlbum.innerHTML = `
-                            <div class="album">
-                                <img src="${data.filePath}" alt="Фото">
-                                <div class="album-title">${title}</div>
-                                <p>1 фотография</p>
-                            </div>
-                        `;
-                        albumsContainer.appendChild(newAlbum);
-                    } else {
-                        alert('Ошибка загрузки файла');
-                    }
-                })
-                .catch(error => {
-                    console.error('Ошибка при загрузке:', error);
-                    alert('Произошла ошибка при загрузке файла.');
-                });
-
-                // Close the modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('addPhotoModal'));
-                modal.hide();
-            }
-        });
     </script>
 </body>
 </html>
