@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои Альбомы</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .album {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #fff;
+        }
+        .album img {
+            max-width: 100%;
+            border-radius: 5px;
+        }
+        .album-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .add-photo {
+            cursor: pointer;
+        }
+        .sort-button {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-primary text-white py-3">
+        <div class="container">
+            <h1 class="text-center">Мои Альбомы</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <!-- Sort and Add Photo Buttons -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <button class="btn btn-primary sort-button" onclick="sortAlbums()">Сортировать</button>
+            <button class="btn btn-success" onclick="openAddPhotoModal()">Добавить фотографию</button>
+        </div>
+
+        <!-- Photo Albums -->
+        <div id="albums" class="row"></div>
+    </main>
+
+    <!-- Add Photo Modal -->
+    <div class="modal fade" id="addPhotoModal" tabindex="-1" aria-labelledby="addPhotoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPhotoModalLabel">Добавить фотографию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addPhotoForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="photoTitle" class="form-label">Название альбома</label>
+                            <input type="text" class="form-control" id="photoTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="photoFile" class="form-label">Выберите фотографию</label>
+                            <input type="file" class="form-control" id="photoFile" name="photoFile" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to sort albums alphabetically
+        function sortAlbums() {
+            const albumsContainer = document.getElementById('albums');
+            const albums = Array.from(albumsContainer.children);
+            albums.sort((a, b) => {
+                const titleA = a.querySelector('.album-title').textContent.toLowerCase();
+                const titleB = b.querySelector('.album-title').textContent.toLowerCase();
+                return titleA.localeCompare(titleB);
+            });
+            albumsContainer.innerHTML = '';
+            albums.forEach(album => albumsContainer.appendChild(album));
+        }
+
+        // Function to open the modal for adding a photo
+        function openAddPhotoModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addPhotoModal'));
+            modal.show();
+        }
+
+        // Handle Add Photo Form Submission
+        document.getElementById('addPhotoForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const albumsContainer = document.getElementById('albums');
+                        const newAlbum = document.createElement('div');
+                        newAlbum.className = 'col-md-4';
+                        newAlbum.innerHTML = `
+                            <div class="album">
+                                <img src="${data.filePath}" alt="Фото">
+                                <div class="album-title">${formData.get('photoTitle')}</div>
+                                <p>1 фотография</p>
+                            </div>
+                        `;
+                        albumsContainer.appendChild(newAlbum);
+                    } else {
+                        alert('Ошибка загрузки файла');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
