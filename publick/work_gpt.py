@@ -4,20 +4,22 @@ import json
 url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 
 payload = json.dumps({
-  "model": "GigaChat",
+  "model": "GigaChat-Pro",
   "messages": [
     {
       "role": "user",
-      "content": "Привет! Как дела?"
+      "content": "Что изображено на рисунке?",
+      "attachments": [
+        "d41a9a52-1918-4c53-9158-df96986737ac"
+      ]
     }
   ],
   "stream": False,
-  "repetition_penalty": 1
+  "update_interval": 0
 })
 headers = {
   'Content-Type': 'application/json',
-  'Accept': 'application/json',
-  'Authorization': 'Bearer <токен_доступа>'
+  'Authorization': 'Bearer access_token'
 }
 
 response = requests.request("POST", url, headers=headers, data=payload)
